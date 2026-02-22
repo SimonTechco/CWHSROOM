@@ -1,0 +1,2054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>🎓 CWHSROOM - Permanent Storage</title>
+    <style>
+        /* ALL YOUR EXISTING STYLES - Keep them exactly as before */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-navy: #0b1e33;
+            --secondary-navy: #1e3a5f;
+            --accent-gold: #f5b342;
+            --danger: #ef4444;
+            --success: #10b981;
+            --bg-light: #f8fafc;
+            --text-dark: #1e2a3a;
+        }
+
+        html, body {
+            height: 100%;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(145deg, var(--primary-navy), var(--secondary-navy));
+        }
+
+        /* Loading Screen */
+        #loadingScreen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--primary-navy);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 20000;
+            color: white;
+            flex-direction: column;
+            gap: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .loader {
+            border: 4px solid rgba(245, 179, 66, 0.3);
+            border-top: 4px solid var(--accent-gold);
+            border-radius: 50%;
+            width: 45px; height: 45px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Custom Alert - Mobile Optimized */
+        #customAlert {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            z-index: 10001;
+            display: none;
+            max-width: none;
+        }
+
+        .alert-content {
+            background: white;
+            border-left: 5px solid;
+            border-radius: 12px;
+            padding: 12px 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border: 2px solid var(--accent-gold);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-success { border-left-color: var(--success); }
+        .alert-error { border-left-color: var(--danger); }
+        .alert-icon {
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+        }
+        .alert-success .alert-icon { background: var(--success); }
+        .alert-error .alert-icon { background: var(--danger); }
+        .alert-message { flex: 1; font-size: 0.9rem; }
+
+        /* Auth Pages */
+        #signupPage, #loginPage {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            overflow-y: auto;
+            background: linear-gradient(145deg, var(--primary-navy), var(--secondary-navy));
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 15px;
+            z-index: 10000;
+        }
+        #loginPage { display: none; }
+
+        .auth-card {
+            width: 100%;
+            max-width: 380px;
+            background: white;
+            padding: 25px 20px;
+            border-radius: 24px;
+            border: 3px solid var(--accent-gold);
+            margin: 20px auto;
+        }
+
+        .auth-card h1 {
+            color: var(--primary-navy);
+            font-size: 2.2rem;
+            text-align: center;
+            margin-bottom: 5px;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .auth-card .subtitle {
+            text-align: center;
+            color: var(--secondary-navy);
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .slogan {
+            text-align: center;
+            color: var(--accent-gold);
+            margin-bottom: 20px;
+            font-size: 1rem;
+            font-style: italic;
+            background: rgba(245,179,66,0.1);
+            padding: 8px;
+            border-radius: 30px;
+        }
+
+        .auth-card input, .auth-card select {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 6px 0;
+            background: var(--bg-light);
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .auth-card button {
+            width: 100%;
+            padding: 14px;
+            margin: 15px 0 10px;
+            background: linear-gradient(135deg, var(--primary-navy), var(--secondary-navy));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border: 2px solid var(--accent-gold);
+        }
+
+        .auth-card button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .auth-card a {
+            color: var(--primary-navy);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .school-password-hint {
+            text-align: center;
+            color: var(--accent-gold);
+            font-size: 0.8rem;
+            margin: 5px 0;
+        }
+
+        /* Main App */
+        #mainApp {
+            display: none;
+            min-height: 100vh;
+            background: var(--bg-light);
+            padding-bottom: 20px;
+        }
+
+        /* Top Bar - Mobile Optimized */
+        .top-bar {
+            background: linear-gradient(135deg, var(--primary-navy), var(--secondary-navy));
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--accent-gold);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .school-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .school-badge h2 {
+            color: white;
+            font-size: 1.3rem;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .slogan-small {
+            color: var(--accent-gold);
+            font-size: 0.75rem;
+            font-style: italic;
+            background: rgba(0,0,0,0.2);
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        .refresh-btn {
+            background: var(--accent-gold);
+            color: var(--primary-navy);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #userMenuBtn {
+            background: var(--accent-gold);
+            color: var(--primary-navy);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        /* Profile Section - Mobile Optimized */
+        #profileSection {
+            margin: 12px;
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            border: 2px solid var(--accent-gold);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .profile-avatar-large {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary-navy), var(--secondary-navy));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            border: 3px solid var(--accent-gold);
+            cursor: pointer;
+        }
+
+        .profile-info {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .profile-name {
+            font-size: 1.2rem;
+            color: var(--primary-navy);
+            font-weight: 600;
+        }
+
+        .profile-grade {
+            color: var(--accent-gold);
+            font-size: 0.8rem;
+            margin: 2px 0;
+        }
+
+        .profile-bio {
+            color: #4a5568;
+            font-size: 0.8rem;
+            font-style: italic;
+            margin: 2px 0;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 10px;
+            color: #718096;
+            font-size: 0.7rem;
+            margin-top: 3px;
+        }
+
+        .edit-profile-btn {
+            background: var(--primary-navy);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        /* Admin Panel */
+        #adminSection {
+            margin: 12px;
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            border: 2px solid var(--accent-gold);
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .admin-header h3 {
+            font-size: 1.1rem;
+            color: var(--primary-navy);
+        }
+
+        .admin-stats {
+            background: var(--primary-navy);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .user-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.85rem;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .admin-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Users Directory & Chat List */
+        #usersDirectory, #chatList {
+            margin: 12px;
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            border: 2px solid var(--accent-gold);
+        }
+
+        .directory-header, .chat-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .directory-header h3, .chat-list-header h3 {
+            font-size: 1.1rem;
+            color: var(--primary-navy);
+        }
+
+        .directory-search input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 8px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .user-card {
+            background: var(--bg-light);
+            padding: 8px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-card-avatar {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, var(--primary-navy), var(--secondary-navy));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            border: 2px solid var(--accent-gold);
+        }
+
+        .user-card-name {
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--primary-navy);
+        }
+
+        .user-card-grade {
+            font-size: 0.65rem;
+            color: #718096;
+        }
+
+        /* Chat List Items */
+        .chat-items {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .chat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border-bottom: 1px solid #e2e8f0;
+            cursor: pointer;
+        }
+
+        .chat-item-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-navy), var(--secondary-navy));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            border: 2px solid var(--accent-gold);
+        }
+
+        .chat-item-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--primary-navy);
+        }
+
+        .chat-item-last {
+            font-size: 0.7rem;
+            color: #718096;
+        }
+
+        .chat-item-badge {
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        /* Create Post - Mobile Optimized */
+        .create-post {
+            margin: 12px;
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            border: 2px solid var(--accent-gold);
+        }
+
+        .post-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 12px;
+            background: var(--bg-light);
+            padding: 4px;
+            border-radius: 30px;
+            overflow-x: auto;
+        }
+
+        .post-tab {
+            flex: 1;
+            min-width: 55px;
+            padding: 6px 4px;
+            background: none;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            color: #4a5568;
+            cursor: pointer;
+            font-size: 0.7rem;
+            white-space: nowrap;
+        }
+
+        .post-tab.active {
+            background: linear-gradient(135deg, var(--primary-navy), var(--secondary-navy));
+            color: white;
+        }
+
+        .post-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            resize: vertical;
+            margin-bottom: 12px;
+        }
+
+        .mic-button-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .mic-button {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--accent-gold);
+            border: none;
+            color: var(--primary-navy);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mic-button.recording {
+            background: var(--danger);
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        .recording-timer {
+            background: var(--danger);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 25px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .media-btn {
+            padding: 8px 15px;
+            background: var(--bg-light);
+            border: none;
+            border-radius: 25px;
+            color: var(--primary-navy);
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .media-preview {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+
+        .preview-item {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid var(--primary-navy);
+        }
+
+        .preview-item img, .preview-item video {
+            width: 100%; height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-preview {
+            position: absolute;
+            top: 2px; right: 2px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            font-size: 0.6rem;
+            cursor: pointer;
+        }
+
+        .post-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary-navy), var(--secondary-navy));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            border: 2px solid var(--accent-gold);
+        }
+
+        /* Feed */
+        .feed {
+            margin: 12px;
+        }
+
+        .feed-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 12px;
+            background: white;
+            padding: 4px;
+            border-radius: 30px;
+            overflow-x: auto;
+        }
+
+        .feed-tab {
+            flex: 1;
+            min-width: 60px;
+            padding: 6px 4px;
+            background: none;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            color: #4a5568;
+            cursor: pointer;
+            font-size: 0.7rem;
+            white-space: nowrap;
+        }
+
+        .feed-tab.active {
+            background: linear-gradient(135deg, var(--primary-navy), var(--secondary-navy));
+            color: white;
+        }
+
+        .search-bar {
+            margin: 10px 0;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 10px 10px 10px 35px;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            font-size: 0.9rem;
+        }
+
+        .posts-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .post-card {
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .post-author {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .author-avatar {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, var(--primary-navy), var(--secondary-navy));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            border: 2px solid var(--accent-gold);
+        }
+
+        .author-info h4 {
+            font-size: 0.95rem;
+            color: var(--primary-navy);
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .timestamp {
+            font-size: 0.65rem;
+            color: #718096;
+        }
+
+        .post-content {
+            margin: 8px 0;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #e2e8f0;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: #4a5568;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 20px;
+        }
+
+        .delete-btn {
+            color: var(--danger);
+            margin-left: auto;
+        }
+
+        .class-card {
+            background: linear-gradient(135deg, var(--primary-navy), var(--secondary-navy));
+            color: white;
+            padding: 10px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid var(--accent-gold);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        /* Private Chat - Mobile Optimized */
+        .chat-container {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            border: 3px solid var(--accent-gold);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            max-height: 80vh;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary-navy), var(--secondary-navy));
+            color: white;
+            padding: 12px;
+            border-radius: 17px 17px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-messages {
+            padding: 12px;
+            overflow-y: auto;
+            max-height: 300px;
+            background: var(--bg-light);
+        }
+
+        .chat-input-area {
+            display: flex;
+            padding: 10px;
+            gap: 8px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            font-size: 0.9rem;
+        }
+
+        .chat-input-area button {
+            padding: 8px 15px;
+            background: var(--primary-navy);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        /* Modals - Mobile Optimized */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 20000;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 24px;
+            max-width: 350px;
+            width: 100%;
+            border: 3px solid var(--accent-gold);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-content h3 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--primary-navy);
+        }
+
+        .modal-content input, .modal-content select, .modal-content textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.9rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .emoji-list {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin: 10px 0;
+        }
+
+        .emoji-item {
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            text-align: center;
+            border: 2px solid transparent;
+        }
+
+        .emoji-item.selected {
+            border-color: var(--accent-gold);
+            background: rgba(245,179,66,0.1);
+        }
+
+        .app-footer {
+            text-align: center;
+            padding: 15px;
+            color: #718096;
+            font-size: 0.7rem;
+            background: white;
+            margin-top: 10px;
+        }
+
+        /* Badges */
+        .admin-badge-founder, .admin-badge-principal, .admin-badge-deputy {
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+        .admin-badge-founder { background: var(--accent-gold); color: var(--primary-navy); }
+        .admin-badge-principal { background: var(--primary-navy); color: var(--accent-gold); }
+        .admin-badge-deputy { background: #4a5568; color: white; }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen">
+        <div class="loader"></div>
+        <div style="font-size: 1.3rem;">CWHSROOM</div>
+        <div style="font-style: italic; color: #f5b342;">God our Foundation</div>
+    </div>
+
+    <!-- Hidden file inputs -->
+    <input type="file" id="photoInput" accept="image/*" capture="camera" style="display:none;">
+    <input type="file" id="videoInput" accept="video/*" capture="camcorder" style="display:none;">
+    <input type="file" id="audioInput" accept="audio/*" capture="microphone" style="display:none;">
+    <input type="file" id="fileInput" accept="image/*,video/*,audio/*" style="display:none;" multiple>
+    <input type="file" id="avatarUpload" accept="image/*" style="display:none;">
+
+    <!-- Private Chat Container -->
+    <div id="chatContainer" class="chat-container">
+        <div class="chat-header">
+            <h3 id="chatWith" style="font-size:0.9rem;">Private Chat</h3>
+            <button class="chat-close" onclick="closeChat()" style="background:none; border:none; color:#f5b342; font-size:1.2rem;">✕</button>
+        </div>
+        <div id="chatMessages" class="chat-messages"></div>
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" placeholder="Type a message...">
+            <button onclick="sendChatMessage()">Send</button>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal">
+        <div class="modal-content">
+            <h3>✏️ Edit Profile</h3>
+            
+            <label style="font-size:0.9rem;">Choose Avatar</label>
+            <div class="emoji-list">
+                <span class="emoji-item" onclick="selectAvatar('👤')">👤</span>
+                <span class="emoji-item" onclick="selectAvatar('👨‍🎓')">👨‍🎓</span>
+                <span class="emoji-item" onclick="selectAvatar('👩‍🎓')">👩‍🎓</span>
+                <span class="emoji-item" onclick="selectAvatar('👨‍🏫')">👨‍🏫</span>
+                <span class="emoji-item" onclick="selectAvatar('👩‍🏫')">👩‍🏫</span>
+                <span class="emoji-item" onclick="selectAvatar('🌟')">🌟</span>
+                <span class="emoji-item" onclick="selectAvatar('⭐')">⭐</span>
+                <span class="emoji-item" onclick="selectAvatar('📚')">📚</span>
+                <span class="emoji-item" onclick="selectAvatar('✏️')">✏️</span>
+                <span class="emoji-item" onclick="selectAvatar('🎓')">🎓</span>
+            </div>
+            
+            <button class="media-btn" style="width:100%; margin:10px 0;" onclick="uploadAvatar()">📷 Upload Photo</button>
+            
+            <input type="text" id="editName" placeholder="Full Name">
+            <select id="editGrade">
+                <option value="Grade 8">Grade 8</option>
+                <option value="Grade 9">Grade 9</option>
+                <option value="Grade 10">Grade 10</option>
+                <option value="Grade 11">Grade 11</option>
+                <option value="Teacher">Teacher</option>
+                <option value="Staff">Staff</option>
+            </select>
+            <textarea id="editBio" placeholder="Write a short bio..." rows="2"></textarea>
+            
+            <div class="modal-buttons">
+                <button class="modal-cancel" onclick="closeEditProfileModal()">Cancel</button>
+                <button class="modal-confirm" onclick="saveProfile()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Profile Modal -->
+    <div id="viewProfileModal" class="modal">
+        <div class="modal-content">
+            <h3 id="viewProfileName">Profile</h3>
+            <div style="text-align: center; margin-bottom:15px;">
+                <div id="viewProfileAvatar" class="profile-avatar-large" style="margin:0 auto;">👤</div>
+                <h4 id="viewProfileFullName" style="margin-top:8px;"></h4>
+                <p id="viewProfileGrade" style="color:var(--accent-gold);"></p>
+            </div>
+            
+            <div style="background:var(--bg-light); padding:10px; border-radius:12px; margin-bottom:10px;">
+                <p id="viewProfileBio" style="font-style:italic;"></p>
+            </div>
+            
+            <div style="display: flex; justify-content: space-around; margin-bottom:15px;">
+                <div><span id="viewProfilePosts">0</span> posts</div>
+                <div>Joined <span id="viewProfileJoined">2026</span></div>
+            </div>
+            
+            <button class="post-btn" onclick="startChatFromProfile()">💬 Message</button>
+            <button class="modal-cancel" style="width:100%; margin-top:8px;" onclick="closeViewProfileModal()">Close</button>
+        </div>
+    </div>
+
+    <!-- Other Modals -->
+    <div id="passwordModal" class="modal"><div class="modal-content"><h3>Change Password</h3><input type="password" id="newPassword" placeholder="New Password"><input type="password" id="confirmPassword" placeholder="Confirm"><div class="modal-buttons"><button class="modal-cancel" onclick="closePasswordModal()">Cancel</button><button class="modal-confirm" onclick="confirmPasswordChange()">Change</button></div></div></div>
+    <div id="sitePasswordModal" class="modal"><div class="modal-content"><h3>Change School Password</h3><p style="color:#666;">Current: <span id="currentSitePassword"></span></p><input type="password" id="newSitePassword" placeholder="New Password"><input type="password" id="confirmSitePassword" placeholder="Confirm"><div class="modal-buttons"><button class="modal-cancel" onclick="closeSitePasswordModal()">Cancel</button><button class="modal-confirm" onclick="confirmSitePasswordChange()">Change</button></div></div></div>
+    <div id="transferModal" class="modal"><div class="modal-content"><h3>Transfer Title</h3><div class="transfer-info" id="transferFromInfo"></div><select id="transferToUser"><option value="">Select title</option></select><div class="modal-buttons"><button class="modal-cancel" onclick="closeTransferModal()">Cancel</button><button class="modal-confirm" onclick="confirmTransfer()">Transfer</button></div></div></div>
+
+    <div id="customAlert"></div>
+
+    <!-- SIGN UP -->
+    <div id="signupPage">
+        <div class="auth-card">
+            <h1>CWHSROOM</h1>
+            <div class="subtitle">Charles Wesley High School</div>
+            <div class="slogan">✝️ God our Foundation</div>
+            
+            <input type="text" id="signupFullName" placeholder="Full Name">
+            
+            <select id="signupGrade">
+                <option value="">Select Grade / Role</option>
+                <option value="Grade 8">Grade 8</option>
+                <option value="Grade 9">Grade 9</option>
+                <option value="Grade 10">Grade 10</option>
+                <option value="Grade 11">Grade 11</option>
+                <option value="Teacher">Teacher</option>
+                <option value="Staff">Staff</option>
+                <option value="Admin" id="adminOption">👑 Admin</option>
+            </select>
+            
+            <select id="adminTitle" style="display: none;">
+                <option value="">Select Admin Title</option>
+                <option value="founder">👑 Founder</option>
+                <option value="principal">📚 Principal</option>
+                <option value="deputy">📋 Deputy</option>
+            </select>
+            
+            <input type="email" id="signupEmail" placeholder="Email">
+            <input type="password" id="signupPassword" placeholder="Create Password">
+            <input type="password" id="signupConfirm" placeholder="Confirm Password">
+            <input type="password" id="signupSchoolPassword" placeholder="School Password">
+            <div class="school-password-hint">by a young programmer</div>
+            
+            <button id="signupBtn" onclick="signup()">CREATE ACCOUNT</button>
+            <p style="text-align:center"><a onclick="showLogin()">Sign In</a></p>
+        </div>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="loginPage">
+        <div class="auth-card">
+            <h1>WELCOME BACK</h1>
+            <div class="slogan">✝️ God our Foundation</div>
+            <input type="text" id="loginUsername" placeholder="Email or Full Name">
+            <input type="password" id="loginPassword" placeholder="Your Password">
+            <input type="password" id="loginSchoolPassword" placeholder="School Password">
+            <div class="school-password-hint">by a young programmer</div>
+            <button onclick="login()">SIGN IN</button>
+            <p style="text-align:center"><a onclick="showSignup()">Create Account</a></p>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="mainApp">
+        <div class="top-bar">
+            <div class="school-badge">
+                <h2>CWHSROOM</h2>
+                <div class="slogan-small">God our Foundation</div>
+                <button class="refresh-btn" onclick="refreshData()">🔄</button>
+            </div>
+            <button id="userMenuBtn" onclick="logout()">👤</button>
+        </div>
+
+        <!-- Profile Section -->
+        <div id="profileSection">
+            <div class="profile-header">
+                <div class="profile-avatar-large" id="profileAvatar" onclick="openEditProfileModal()">👤</div>
+                <div class="profile-info">
+                    <div class="profile-name" id="profileName">Loading...</div>
+                    <div class="profile-grade" id="profileGrade"></div>
+                    <div class="profile-bio" id="profileBio"></div>
+                    <div class="profile-stats">
+                        <span id="profilePostCount">0 posts</span>
+                        <span id="profileJoined">2026</span>
+                    </div>
+                </div>
+                <button class="edit-profile-btn" onclick="openEditProfileModal()">Edit</button>
+            </div>
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="adminSection" style="display: none;">
+            <div class="admin-header">
+                <h3>👑 Admin</h3>
+                <div class="admin-stats" id="adminStats">0 users</div>
+            </div>
+            <button class="admin-btn site-password-btn" style="width:100%; margin-bottom:10px;" onclick="openSitePasswordModal()">Change School Password</button>
+            <div id="userList"></div>
+        </div>
+
+        <!-- Users Directory -->
+        <div id="usersDirectory">
+            <div class="directory-header">
+                <h3>👥 Users</h3>
+                <span id="userCount">0</span>
+            </div>
+            <div class="directory-search">
+                <input type="text" id="directorySearch" placeholder="Search users..." onkeyup="renderUserDirectory()">
+            </div>
+            <div class="users-grid" id="usersGrid"></div>
+        </div>
+
+        <!-- Chat List -->
+        <div id="chatList">
+            <div class="chat-list-header">
+                <h3>💬 Chats</h3>
+                <span id="chatCount">0</span>
+            </div>
+            <div class="chat-items" id="chatItems"></div>
+        </div>
+
+        <!-- Create Post -->
+        <div class="create-post">
+            <div class="post-tabs">
+                <button class="post-tab active" onclick="switchPostTab('text')">📝 Text</button>
+                <button class="post-tab" onclick="takePhoto()">📷 Photo</button>
+                <button class="post-tab" onclick="recordVideo()">🎥 Video</button>
+                <button class="post-tab" onclick="recordAudio()">🎵 Audio</button>
+                <button class="post-tab" onclick="switchPostTab('study')">📖 Study</button>
+            </div>
+            
+            <textarea id="postContent" class="post-input" placeholder="What's on your mind?" rows="2"></textarea>
+
+            <div class="mic-button-container">
+                <button id="micButton" class="mic-button" onmousedown="startRecording()" onmouseup="stopRecording()" onmouseleave="stopRecording()" ontouchstart="startRecording()" ontouchend="stopRecording()" ontouchcancel="stopRecording()">🎤</button>
+                <div id="recordingTimer" class="recording-timer" style="display: none;">0:00</div>
+                <span style="font-size:0.8rem;">Hold to record</span>
+            </div>
+            
+            <div id="studyClassSelector" style="display: none;">
+                <select id="studyClass" class="post-input">
+                    <option value="">Select class</option>
+                    <option value="8A">8A</option><option value="8B">8B</option><option value="8C">8C</option><option value="8D">8D</option>
+                    <option value="9A">9A</option><option value="9B">9B</option><option value="9C">9C</option><option value="9D">9D</option>
+                    <option value="10A">10A</option><option value="10B">10B</option><option value="10C">10C</option><option value="10D">10D</option>
+                    <option value="11A">11A</option><option value="11B">11B</option><option value="11C">11C</option>
+                </select>
+            </div>
+            
+            <div class="media-controls">
+                <button class="media-btn" onclick="document.getElementById('fileInput').click()">📎 Add Files</button>
+                <span style="font-size:0.7rem;">Max 5</span>
+            </div>
+            <div class="media-preview" id="mediaPreview"></div>
+            <button class="post-btn" onclick="createPost()">POST</button>
+        </div>
+
+        <!-- Feed -->
+        <div class="feed">
+            <div class="feed-tabs">
+                <button class="feed-tab active" onclick="switchFeed('latest')">🕒 Latest</button>
+                <button class="feed-tab" onclick="switchFeed('popular')">🔥 Popular</button>
+                <button class="feed-tab" onclick="switchFeed('mygrade')">📚 My Grade</button>
+                <button class="feed-tab" onclick="showStudyHub()">📖 Study</button>
+            </div>
+            
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search..." onkeyup="renderFeed()">
+            </div>
+            
+            <div id="classFilterBar" style="display: none;">
+                <button class="back-button" onclick="showAllPosts()">← Back</button>
+                <div style="background:var(--primary-navy); color:white; padding:8px; border-radius:12px; margin-top:5px;">
+                    <span id="currentClass"></span> - <span id="classPostCount"></span>
+                </div>
+            </div>
+            
+            <div id="postsFeed" class="posts-grid"></div>
+            <div id="studyHubView" style="display: none;">
+                <div class="classes-grid" id="classesGrid"></div>
+            </div>
+        </div>
+
+        <div class="app-footer">
+            <p>Charles Wesley High School • Created by Lihle Mthembu</p>
+        </div>
+    </div>
+
+    <script>
+        // ==================== CONFIG ====================
+        const BIN_ID = '69995ebfd0ea881f40cbca44';
+        const API_KEY = '$2a$10$m8uYvFYN61dc8cNoeUnDbuScQ3jPyONR75jfR1hXNT6H8DXV6BwEq';
+        const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+        let SCHOOL_PASSWORD = 'CWHS123';
+        let adminTitles = { founder: null, principal: null, deputy: null };
+        const ALLOWED_DOMAINS = ['gmail.com', 'yahoo.com', 'outlook.com', 'icloud.com'];
+        const STUDY_CLASSES = ['8A','8B','8C','8D','9A','9B','9C','9D','10A','10B','10C','10D','11A','11B','11C'];
+        const AVATAR_EMOJIS = ['👤', '👨‍🎓', '👩‍🎓', '👨‍🏫', '👩‍🏫', '🌟', '⭐', '📚', '✏️', '🎓'];
+
+        // ==================== GLOBAL DATA ====================
+        let currentUser = null;
+        let posts = [];
+        let users = [];
+        let currentFeed = 'latest';
+        let mediaFiles = [];
+        let selectedUserId = null;
+        let activePostForComment = null;
+        let currentClassFilter = null;
+        let privateMessages = [];
+        let currentChatPartner = null;
+        let transferData = null;
+        let selectedAvatar = '👤';
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let recordingTimer = null;
+        let recordingSeconds = 0;
+        let isRecording = false;
+
+        // ==================== LOCAL BACKUP SYSTEM ====================
+        function saveLocalBackup() {
+            try {
+                const backup = {
+                    users: users,
+                    posts: posts,
+                    privateMessages: privateMessages,
+                    timestamp: new Date().toISOString()
+                };
+                localStorage.setItem('cwhs_backup', JSON.stringify(backup));
+                console.log('Local backup saved');
+            } catch (e) {
+                console.log('Backup error:', e);
+            }
+        }
+
+        function loadLocalBackup() {
+            try {
+                const backup = localStorage.getItem('cwhs_backup');
+                if (backup) {
+                    const data = JSON.parse(backup);
+                    // Only use if cloud is empty
+                    if (users.length === 0 && data.users.length > 0) {
+                        users = data.users;
+                        posts = data.posts;
+                        privateMessages = data.privateMessages;
+                        console.log('Restored from local backup');
+                        showAlert('Restored from backup', 'success');
+                        return true;
+                    }
+                }
+            } catch (e) {
+                console.log('Backup load error:', e);
+            }
+            return false;
+        }
+
+        // ==================== HELPERS ====================
+        function hideLoading() { document.getElementById('loadingScreen').style.display = 'none'; }
+        function showAlert(msg, type = 'success') {
+            const alertDiv = document.getElementById('customAlert');
+            alertDiv.innerHTML = `<div class="alert-content alert-${type}"><span class="alert-icon">${type === 'success' ? '✓' : '✕'}</span><span class="alert-message">${msg}</span></div>`;
+            alertDiv.style.display = 'block';
+            setTimeout(() => { alertDiv.style.display = 'none'; }, 3000);
+        }
+        function isAdmin(user) { return user && (user.adminTitle === 'founder' || user.adminTitle === 'principal' || user.adminTitle === 'deputy'); }
+        function getAdminBadgeClass(title) {
+            switch(title) {
+                case 'founder': return 'admin-badge-founder';
+                case 'principal': return 'admin-badge-principal';
+                case 'deputy': return 'admin-badge-deputy';
+                default: return '';
+            }
+        }
+        function getAdminTitleDisplay(title) {
+            switch(title) {
+                case 'founder': return '👑 Founder';
+                case 'principal': return '📚 Principal';
+                case 'deputy': return '📋 Deputy';
+                default: return '';
+            }
+        }
+        function isValidEmail(email) {
+            if (!email || !email.includes('@')) return false;
+            const domain = email.split('@')[1].toLowerCase();
+            return ALLOWED_DOMAINS.includes(domain);
+        }
+
+        // ==================== PROFILE FUNCTIONS ====================
+        function updateProfileDisplay() {
+            if (!currentUser) return;
+            document.getElementById('profileAvatar').innerText = currentUser.avatar || '👤';
+            document.getElementById('profileName').innerText = currentUser.name;
+            document.getElementById('profileGrade').innerText = currentUser.grade;
+            document.getElementById('profileBio').innerText = currentUser.bio || 'No bio';
+            const userPosts = posts.filter(p => p.userId === currentUser.id).length;
+            document.getElementById('profilePostCount').innerText = `${userPosts} posts`;
+            document.getElementById('profileJoined').innerText = new Date(currentUser.joined).getFullYear();
+        }
+        function openEditProfileModal() {
+            if (!currentUser) return;
+            document.getElementById('editName').value = currentUser.name;
+            document.getElementById('editGrade').value = currentUser.grade;
+            document.getElementById('editBio').value = currentUser.bio || '';
+            selectedAvatar = currentUser.avatar || '👤';
+            document.querySelectorAll('.emoji-item').forEach(el => el.classList.toggle('selected', el.innerText === selectedAvatar));
+            document.getElementById('editProfileModal').style.display = 'flex';
+        }
+        function closeEditProfileModal() { document.getElementById('editProfileModal').style.display = 'none'; }
+        function selectAvatar(emoji) {
+            selectedAvatar = emoji;
+            document.querySelectorAll('.emoji-item').forEach(el => el.classList.toggle('selected', el.innerText === emoji));
+        }
+        function uploadAvatar() { document.getElementById('avatarUpload').click(); }
+        document.getElementById('avatarUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) { selectedAvatar = e.target.result; showAlert('Image selected!', 'success'); };
+                reader.readAsDataURL(file);
+            }
+        });
+        async function saveProfile() {
+            if (!currentUser) return;
+            const newName = document.getElementById('editName').value.trim();
+            const newGrade = document.getElementById('editGrade').value;
+            const newBio = document.getElementById('editBio').value.trim();
+            if (!newName || !newGrade) { showAlert('Name and grade required', 'error'); return; }
+            currentUser.name = newName;
+            currentUser.grade = newGrade;
+            currentUser.bio = newBio;
+            currentUser.avatar = selectedAvatar;
+            const userIndex = users.findIndex(u => u.id === currentUser.id);
+            if (userIndex !== -1) users[userIndex] = currentUser;
+            posts.forEach(p => { if (p.userId === currentUser.id) { p.author = newName; p.avatar = selectedAvatar; p.grade = newGrade; } });
+            await saveData();
+            updateProfileDisplay();
+            document.getElementById('userMenuBtn').innerText = `👤 ${newName.split(' ')[0]}`;
+            renderFeed();
+            renderUserDirectory();
+            renderChatList();
+            closeEditProfileModal();
+            showAlert('Profile updated!', 'success');
+        }
+        function viewProfile(userId) {
+            const user = users.find(u => u.id === userId);
+            if (!user) return;
+            document.getElementById('viewProfileName').innerText = `${user.name}'s Profile`;
+            document.getElementById('viewProfileAvatar').innerText = user.avatar || '👤';
+            document.getElementById('viewProfileFullName').innerText = user.name;
+            document.getElementById('viewProfileGrade').innerText = user.grade;
+            document.getElementById('viewProfileBio').innerText = user.bio || 'No bio';
+            document.getElementById('viewProfilePosts').innerText = posts.filter(p => p.userId === userId).length;
+            document.getElementById('viewProfileJoined').innerText = new Date(user.joined).getFullYear();
+            window.profileViewUserId = userId;
+            window.profileViewUserName = user.name;
+            document.getElementById('viewProfileModal').style.display = 'flex';
+        }
+        function closeViewProfileModal() { document.getElementById('viewProfileModal').style.display = 'none'; }
+        function startChatFromProfile() { closeViewProfileModal(); if (window.profileViewUserId) openChat(window.profileViewUserId, window.profileViewUserName); }
+
+        // ==================== ADMIN TITLE MANAGEMENT ====================
+        function updateAdminTitles() {
+            adminTitles = { founder: null, principal: null, deputy: null };
+            users.forEach(user => { if (user.adminTitle) adminTitles[user.adminTitle] = user.id; });
+            const adminOption = document.getElementById('adminOption');
+            if (adminOption) {
+                const available = [];
+                if (!adminTitles.founder) available.push('Founder');
+                if (!adminTitles.principal) available.push('Principal');
+                if (!adminTitles.deputy) available.push('Deputy');
+                adminOption.disabled = available.length === 0;
+                adminOption.textContent = available.length ? `👑 Admin (${available.join(', ')})` : '👑 Admin (None)';
+            }
+        }
+        document.getElementById('signupGrade').addEventListener('change', function() {
+            const t = document.getElementById('adminTitle');
+            t.style.display = this.value === 'Admin' ? 'block' : 'none';
+            if (this.value === 'Admin') {
+                Array.from(t.options).forEach(opt => {
+                    if (opt.value) {
+                        opt.disabled = !!adminTitles[opt.value];
+                        opt.textContent = opt.disabled ? `${getAdminTitleDisplay(opt.value)} (Taken)` : getAdminTitleDisplay(opt.value);
+                    }
+                });
+            }
+        });
+
+        // ==================== REFRESH ====================
+        async function refreshData() {
+            showAlert('Refreshing...', 'success');
+            await loadData();
+            updateProfileDisplay();
+            if (currentClassFilter) filterByClass(currentClassFilter); else renderFeed();
+            renderUserDirectory();
+            renderChatList();
+            renderUserList();
+            showAlert('Refreshed!', 'success');
+        }
+
+        // ==================== USER DIRECTORY ====================
+        function renderUserDirectory() {
+            const grid = document.getElementById('usersGrid');
+            const search = document.getElementById('directorySearch')?.value.toLowerCase() || '';
+            let filtered = users.filter(u => u.id !== currentUser?.id);
+            if (search) filtered = filtered.filter(u => u.name.toLowerCase().includes(search) || u.grade.toLowerCase().includes(search));
+            document.getElementById('userCount').innerText = filtered.length;
+            let html = '';
+            filtered.forEach(user => {
+                const badge = user.adminTitle ? `<span class="${getAdminBadgeClass(user.adminTitle)}">${getAdminTitleDisplay(user.adminTitle)}</span>` : '';
+                html += `<div class="user-card" onclick="viewProfile('${user.id}')"><div class="user-card-avatar">${user.avatar || '👤'}</div><div class="user-card-info"><div class="user-card-name">${user.name} ${badge}</div><div class="user-card-grade">${user.grade}</div></div></div>`;
+            });
+            grid.innerHTML = html || '<p style="padding:1rem; text-align:center;">No users</p>';
+        }
+
+        // ==================== CHAT LIST ====================
+        function renderChatList() {
+            const chatItems = document.getElementById('chatItems');
+            if (!currentUser) return;
+            const partners = new Set();
+            privateMessages.filter(m => m.senderId === currentUser.id || m.receiverId === currentUser.id).forEach(m => partners.add(m.senderId === currentUser.id ? m.receiverId : m.senderId));
+            document.getElementById('chatCount').innerText = partners.size;
+            if (partners.size === 0) { chatItems.innerHTML = '<p style="padding:1rem; text-align:center;">No chats</p>'; return; }
+            let html = '';
+            partners.forEach(pid => {
+                const partner = users.find(u => u.id === pid);
+                if (!partner) return;
+                const chatId = [currentUser.id, pid].sort().join('_');
+                const msgs = privateMessages.filter(m => m.chatId === chatId);
+                const last = msgs[msgs.length - 1];
+                const unread = msgs.filter(m => m.receiverId === currentUser.id && !m.read).length;
+                const badge = partner.adminTitle ? `<span class="${getAdminBadgeClass(partner.adminTitle)}" style="margin-left:0.3rem;">${partner.adminTitle.charAt(0).toUpperCase()}</span>` : '';
+                html += `<div class="chat-item" onclick="openChat('${pid}', '${partner.name}')"><div class="chat-item-avatar">${partner.avatar || '👤'}</div><div class="chat-item-info"><div class="chat-item-name">${partner.name} ${badge}</div><div class="chat-item-last">${last ? last.text : 'No messages'}</div></div>${unread ? `<div class="chat-item-badge">${unread}</div>` : ''}</div>`;
+            });
+            chatItems.innerHTML = html;
+        }
+
+        // ==================== CHAT ====================
+        function openChat(uid, name) {
+            if (!currentUser || uid === currentUser.id) return;
+            currentChatPartner = { id: uid, name: name };
+            document.getElementById('chatWith').innerText = `Chat with ${name}`;
+            document.getElementById('chatContainer').style.display = 'flex';
+            loadChatMessages();
+            markMessagesAsRead(uid);
+        }
+        function closeChat() { document.getElementById('chatContainer').style.display = 'none'; currentChatPartner = null; renderChatList(); }
+        function markMessagesAsRead(pid) {
+            if (!currentUser) return;
+            const chatId = [currentUser.id, pid].sort().join('_');
+            let changed = false;
+            privateMessages.forEach(m => { if (m.chatId === chatId && m.receiverId === currentUser.id && !m.read) { m.read = true; changed = true; } });
+            if (changed) { saveData(); renderChatList(); }
+        }
+        function loadChatMessages() {
+            if (!currentChatPartner || !currentUser) return;
+            const chatId = [currentUser.id, currentChatPartner.id].sort().join('_');
+            const msgs = privateMessages.filter(m => m.chatId === chatId).sort((a,b)=>new Date(a.timestamp)-new Date(b.timestamp));
+            const div = document.getElementById('chatMessages');
+            div.innerHTML = msgs.map(m => `<div class="chat-message ${m.senderId===currentUser.id?'sent':'received'}"><div class="message-bubble">${m.text}</div><div class="message-time">${new Date(m.timestamp).toLocaleTimeString()}</div></div>`).join('');
+            div.scrollTop = div.scrollHeight;
+        }
+        async function sendChatMessage() {
+            if (!currentUser || !currentChatPartner) return;
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+            const msg = { id:'msg_'+Date.now(), chatId:[currentUser.id, currentChatPartner.id].sort().join('_'), senderId:currentUser.id, senderName:currentUser.name, receiverId:currentChatPartner.id, text, timestamp:new Date().toISOString(), read:false };
+            privateMessages.push(msg);
+            input.value = '';
+            await saveData();
+            loadChatMessages();
+            renderChatList();
+        }
+
+        // ==================== VOICE ====================
+        async function startRecording() {
+            if (isRecording) return;
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                mediaRecorder.onstop = () => {
+                    const reader = new FileReader();
+                    reader.onload = e => { if (mediaFiles.length<5) { mediaFiles.push({type:'audio', url:e.target.result}); updateMediaPreview(); } else showAlert('Max 5', 'error'); };
+                    reader.readAsDataURL(new Blob(audioChunks, {type:'audio/webm'}));
+                    stream.getTracks().forEach(t=>t.stop());
+                };
+                mediaRecorder.start();
+                isRecording = true;
+                document.getElementById('micButton').classList.add('recording');
+                document.getElementById('recordingTimer').style.display = 'inline-block';
+                recordingSeconds = 0;
+                updateRecordingTimer();
+                recordingTimer = setInterval(() => { recordingSeconds++; updateRecordingTimer(); }, 1000);
+            } catch (err) { showAlert('Microphone access denied', 'error'); }
+        }
+        function stopRecording() {
+            if (!isRecording || !mediaRecorder) return;
+            mediaRecorder.stop();
+            isRecording = false;
+            clearInterval(recordingTimer);
+            document.getElementById('micButton').classList.remove('recording');
+            document.getElementById('recordingTimer').style.display = 'none';
+        }
+        function updateRecordingTimer() { document.getElementById('recordingTimer').textContent = `${Math.floor(recordingSeconds/60)}:${(recordingSeconds%60).toString().padStart(2,'0')}`; }
+
+        // ==================== DATABASE with BACKUP ====================
+        async function loadData() {
+            return new Promise(r => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', API_URL, true);
+                xhr.setRequestHeader('X-Master-Key', API_KEY);
+                xhr.timeout = 10000;
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        try {
+                            const data = JSON.parse(xhr.responseText);
+                            if (data && data.record) {
+                                users = data.record.users || [];
+                                posts = data.record.posts || [];
+                                privateMessages = data.record.privateMessages || [];
+                                SCHOOL_PASSWORD = data.record.schoolPassword || 'CWHS123';
+                                updateAdminTitles();
+                                saveLocalBackup(); // Save backup after successful load
+                            } else {
+                                // Try to load from backup
+                                loadLocalBackup();
+                            }
+                        } catch(e) { loadLocalBackup(); }
+                    } else {
+                        loadLocalBackup();
+                    }
+                    r();
+                };
+                xhr.onerror = xhr.ontimeout = () => { loadLocalBackup(); r(); };
+                xhr.send();
+            });
+        }
+
+        async function saveData() {
+            return new Promise(r => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('PUT', API_URL, true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.setRequestHeader('X-Master-Key', API_KEY);
+                xhr.timeout = 10000;
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        saveLocalBackup(); // Save backup after successful save
+                        r(true);
+                    } else {
+                        // Even if cloud fails, save locally
+                        saveLocalBackup();
+                        r(false);
+                    }
+                };
+                xhr.onerror = xhr.ontimeout = () => { 
+                    saveLocalBackup(); // Save locally even if cloud fails
+                    r(false); 
+                };
+                xhr.send(JSON.stringify({ users, posts, privateMessages, schoolPassword: SCHOOL_PASSWORD }));
+            });
+        }
+
+        // ==================== AUTH with VERIFICATION ====================
+        async function signup() {
+            const name = document.getElementById('signupFullName').value.trim();
+            const grade = document.getElementById('signupGrade').value;
+            const adminTitle = document.getElementById('adminTitle').value;
+            const email = document.getElementById('signupEmail').value.trim();
+            const pass = document.getElementById('signupPassword').value;
+            const confirm = document.getElementById('signupConfirm').value;
+            const schoolPass = document.getElementById('signupSchoolPassword').value;
+            
+            if (!name || !grade || !email || !pass || !confirm || !schoolPass) { showAlert('Fill all fields', 'error'); return; }
+            if (pass !== confirm) { showAlert('Passwords do not match', 'error'); return; }
+            if (pass.length < 6) { showAlert('Password too short', 'error'); return; }
+            if (!isValidEmail(email)) { showAlert('Invalid email', 'error'); return; }
+            
+            await loadData();
+            
+            if (schoolPass !== SCHOOL_PASSWORD) { showAlert('Incorrect school password', 'error'); return; }
+            if (users.find(u => u.email === email)) { showAlert('Email exists', 'error'); return; }
+            
+            if (grade === 'Admin') {
+                if (!adminTitle) { showAlert('Select admin title', 'error'); return; }
+                if (adminTitles[adminTitle]) { showAlert(`${adminTitle} title taken`, 'error'); return; }
+            }
+            
+            const newUser = { id:'user_'+Date.now(), name, grade: grade==='Admin'?getAdminTitleDisplay(adminTitle):grade, email, password:btoa(pass), avatar:'👤', bio:'', joined:new Date().toISOString(), adminTitle: grade==='Admin'?adminTitle:null };
+            users.push(newUser);
+            
+            // Save and verify
+            const saved = await saveData();
+            
+            // Double-check by reloading
+            await loadData();
+            
+            // Verify user exists in loaded data
+            const verifiedUser = users.find(u => u.id === newUser.id);
+            
+            if (verifiedUser) {
+                currentUser = verifiedUser;
+                localStorage.setItem('cwhs_user', verifiedUser.id);
+                document.getElementById('userMenuBtn').innerText = `👤 ${name.split(' ')[0]}`;
+                updateAdminTitles();
+                showMainApp();
+                updateProfileDisplay();
+                renderFeed();
+                renderUserDirectory();
+                renderChatList();
+                showAlert(`Welcome ${name}! Your account is saved permanently.`);
+            } else {
+                // Try one more time
+                users.push(newUser);
+                await saveData();
+                await loadData();
+                const finalCheck = users.find(u => u.id === newUser.id);
+                if (finalCheck) {
+                    currentUser = finalCheck;
+                    localStorage.setItem('cwhs_user', finalCheck.id);
+                    document.getElementById('userMenuBtn').innerText = `👤 ${name.split(' ')[0]}`;
+                    updateAdminTitles();
+                    showMainApp();
+                    updateProfileDisplay();
+                    renderFeed();
+                    renderUserDirectory();
+                    renderChatList();
+                    showAlert(`Welcome ${name}!`);
+                } else {
+                    showAlert('Signup failed - please try again', 'error');
+                }
+            }
+        }
+
+        async function login() {
+            const input = document.getElementById('loginUsername').value.trim();
+            const pass = document.getElementById('loginPassword').value;
+            const schoolPass = document.getElementById('loginSchoolPassword').value;
+            
+            if (!input || !pass || !schoolPass) { showAlert('Fill all fields', 'error'); return; }
+            
+            await loadData();
+            
+            if (schoolPass !== SCHOOL_PASSWORD) { showAlert('Incorrect school password', 'error'); return; }
+            
+            const user = users.find(u => (u.email === input || u.name === input) && u.password === btoa(pass));
+            
+            if (!user) { 
+                // Check local backup
+                const backup = localStorage.getItem('cwhs_backup');
+                if (backup) {
+                    const data = JSON.parse(backup);
+                    const backupUser = data.users.find(u => (u.email === input || u.name === input) && u.password === btoa(pass));
+                    if (backupUser) {
+                        // Restore from backup
+                        users = data.users;
+                        posts = data.posts;
+                        privateMessages = data.privateMessages;
+                        currentUser = backupUser;
+                        localStorage.setItem('cwhs_user', backupUser.id);
+                        document.getElementById('userMenuBtn').innerText = `👤 ${backupUser.name.split(' ')[0]}`;
+                        updateAdminTitles();
+                        showMainApp();
+                        updateProfileDisplay();
+                        renderFeed();
+                        renderUserDirectory();
+                        renderChatList();
+                        showAlert(`Welcome back ${backupUser.name}! (Restored from backup)`);
+                        return;
+                    }
+                }
+                showAlert('Invalid credentials', 'error'); 
+                return; 
+            }
+            
+            currentUser = user;
+            localStorage.setItem('cwhs_user', user.id);
+            document.getElementById('userMenuBtn').innerText = `👤 ${user.name.split(' ')[0]}`;
+            updateAdminTitles();
+            showMainApp();
+            updateProfileDisplay();
+            renderFeed();
+            renderUserDirectory();
+            renderChatList();
+            showAlert(`Welcome back ${user.name}!`);
+        }
+
+        function logout() { currentUser = null; localStorage.removeItem('cwhs_user'); showSignup(); closeChat(); }
+
+        async function checkSavedUser() {
+            await loadData();
+            const saved = localStorage.getItem('cwhs_user');
+            if (saved) {
+                const user = users.find(u => u.id === saved);
+                if (user) {
+                    currentUser = user;
+                    document.getElementById('userMenuBtn').innerText = `👤 ${user.name.split(' ')[0]}`;
+                    updateAdminTitles();
+                    showMainApp();
+                    updateProfileDisplay();
+                    renderFeed();
+                    renderUserDirectory();
+                    renderChatList();
+                } else {
+                    // Try to restore from backup
+                    const backup = localStorage.getItem('cwhs_backup');
+                    if (backup) {
+                        const data = JSON.parse(backup);
+                        const backupUser = data.users.find(u => u.id === saved);
+                        if (backupUser) {
+                            users = data.users;
+                            posts = data.posts;
+                            privateMessages = data.privateMessages;
+                            currentUser = backupUser;
+                            document.getElementById('userMenuBtn').innerText = `👤 ${backupUser.name.split(' ')[0]}`;
+                            updateAdminTitles();
+                            showMainApp();
+                            updateProfileDisplay();
+                            renderFeed();
+                            renderUserDirectory();
+                            renderChatList();
+                            showAlert('Restored from backup', 'success');
+                        } else {
+                            showSignup();
+                        }
+                    } else {
+                        showSignup();
+                    }
+                }
+            } else {
+                showSignup();
+            }
+        }
+
+        // ==================== PAGE SWITCH ====================
+        function showSignup() { document.getElementById('signupPage').style.display = 'flex'; document.getElementById('loginPage').style.display = 'none'; document.getElementById('mainApp').style.display = 'none'; }
+        function showLogin() { document.getElementById('signupPage').style.display = 'none'; document.getElementById('loginPage').style.display = 'flex'; document.getElementById('mainApp').style.display = 'none'; }
+        function showMainApp() {
+            document.getElementById('signupPage').style.display = 'none';
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            document.getElementById('adminSection').style.display = currentUser && isAdmin(currentUser) ? 'block' : 'none';
+            if (currentUser && isAdmin(currentUser)) renderUserList();
+        }
+
+        // ==================== ADMIN ====================
+        function renderUserList() {
+            const list = document.getElementById('userList');
+            document.getElementById('adminStats').innerText = users.length;
+            let html = '';
+            users.forEach(user => {
+                if (user.email && !isAdmin(user)) {
+                    html += `<div class="user-row"><div><div class="user-name">${user.name}</div><div class="user-email">${user.email}</div></div><div class="admin-actions">${isAdmin(currentUser) && currentUser.id !== user.id ? `<button class="admin-btn change-password-btn" onclick="openPasswordModal('${user.id}')">PW</button><button class="admin-btn evict-btn" onclick="evictUser('${user.id}')">Evict</button>${currentUser.adminTitle==='founder'?`<button class="admin-btn transfer-btn" onclick="openTransferModal('${user.id}','${user.name}')">Transfer</button>`:''}`:''}</div></div>`;
+                }
+            });
+            list.innerHTML = html || '<p>No regular users</p>';
+        }
+        function openTransferModal(uid, name) {
+            transferData = { userId: uid, userName: name };
+            document.getElementById('transferFromInfo').innerHTML = `Transfer from ${currentUser.name} to ${name}?`;
+            const sel = document.getElementById('transferToUser');
+            sel.innerHTML = '<option value="">Select</option>';
+            if (currentUser.adminTitle === 'founder') sel.innerHTML += '<option value="founder">👑 Founder</option><option value="principal">📚 Principal</option><option value="deputy">📋 Deputy</option>';
+            document.getElementById('transferModal').style.display = 'flex';
+        }
+        function closeTransferModal() { document.getElementById('transferModal').style.display = 'none'; transferData = null; }
+        async function confirmTransfer() {
+            const title = document.getElementById('transferToUser').value;
+            if (!title || !transferData) return;
+            const target = users.find(u => u.id === transferData.userId);
+            if (!target) return;
+            currentUser.adminTitle = null;
+            currentUser.grade = 'Former Admin';
+            target.adminTitle = title;
+            target.grade = getAdminTitleDisplay(title);
+            await saveData();
+            updateAdminTitles();
+            showAlert(`Transferred ${title} to ${target.name}`, 'success');
+            closeTransferModal();
+            renderUserList();
+            renderUserDirectory();
+            renderFeed();
+            updateProfileDisplay();
+            document.getElementById('userMenuBtn').innerText = `👤 ${currentUser.name.split(' ')[0]}`;
+        }
+        function openPasswordModal(uid) { selectedUserId = uid; document.getElementById('passwordModal').style.display = 'flex'; }
+        function closePasswordModal() { document.getElementById('passwordModal').style.display = 'none'; document.getElementById('newPassword').value = ''; document.getElementById('confirmPassword').value = ''; selectedUserId = null; }
+        async function confirmPasswordChange() {
+            if (!selectedUserId || !currentUser) return;
+            const p = document.getElementById('newPassword').value, c = document.getElementById('confirmPassword').value;
+            if (!p || p.length<6) { showAlert('Password too short', 'error'); return; }
+            if (p !== c) { showAlert('Passwords do not match', 'error'); return; }
+            const u = users.find(u => u.id === selectedUserId);
+            if (u) { u.password = btoa(p); await saveData(); showAlert(`Password changed`, 'success'); closePasswordModal(); }
+        }
+        async function evictUser(uid) {
+            if (!currentUser) return;
+            const u = users.find(u => u.id === uid);
+            if (!u) return;
+            if (u.adminTitle) { showAlert('Cannot evict admin', 'error'); return; }
+            if (confirm(`Evict ${u.name}?`)) {
+                users = users.filter(u => u.id !== uid);
+                posts = posts.filter(p => p.userId !== uid);
+                privateMessages = privateMessages.filter(m => m.senderId !== uid && m.receiverId !== uid);
+                await saveData();
+                renderUserList();
+                renderFeed();
+                renderUserDirectory();
+                renderChatList();
+                showAlert(`${u.name} evicted`, 'success');
+            }
+        }
+        function openSitePasswordModal() { document.getElementById('currentSitePassword').innerText = SCHOOL_PASSWORD; document.getElementById('sitePasswordModal').style.display = 'flex'; }
+        function closeSitePasswordModal() { document.getElementById('sitePasswordModal').style.display = 'none'; document.getElementById('newSitePassword').value = ''; document.getElementById('confirmSitePassword').value = ''; }
+        async function confirmSitePasswordChange() {
+            const n = document.getElementById('newSitePassword').value, c = document.getElementById('confirmSitePassword').value;
+            if (!n || n.length<6) { showAlert('Too short', 'error'); return; }
+            if (n !== c) { showAlert('No match', 'error'); return; }
+            SCHOOL_PASSWORD = n;
+            await saveData();
+            showAlert('School password changed!', 'success');
+            closeSitePasswordModal();
+        }
+
+        // ==================== MEDIA ====================
+        function takePhoto() { const i = document.getElementById('photoInput'); i.onchange = function() { handleMediaCapture(this.files, 'image'); }; i.click(); }
+        function recordVideo() { const i = document.getElementById('videoInput'); i.onchange = function() { handleMediaCapture(this.files, 'video'); }; i.click(); }
+        function recordAudio() { const i = document.getElementById('audioInput'); i.onchange = function() { handleMediaCapture(this.files, 'audio'); }; i.click(); }
+        function handleMediaCapture(files, type) {
+            if (!files || files.length === 0) return;
+            if (mediaFiles.length + files.length > 5) { showAlert('Max 5', 'error'); return; }
+            Array.from(files).forEach(f => {
+                const r = new FileReader();
+                r.onload = e => { mediaFiles.push({ type, url: e.target.result }); updateMediaPreview(); };
+                r.readAsDataURL(f);
+            });
+        }
+        function updateMediaPreview() {
+            const preview = document.getElementById('mediaPreview');
+            preview.innerHTML = '';
+            mediaFiles.forEach((f, i) => {
+                const div = document.createElement('div');
+                div.className = 'preview-item';
+                if (f.type === 'image') div.innerHTML = `<img src="${f.url}">`;
+                else if (f.type === 'video') div.innerHTML = `<video src="${f.url}"></video>`;
+                else if (f.type === 'audio') { div.innerHTML = `<audio src="${f.url}" controls></audio>`; div.style.width = '160px'; div.style.height = '40px'; }
+                const btn = document.createElement('button');
+                btn.className = 'remove-preview';
+                btn.innerText = '✕';
+                btn.onclick = () => { mediaFiles.splice(i, 1); updateMediaPreview(); };
+                div.appendChild(btn);
+                preview.appendChild(div);
+            });
+        }
+        function switchPostTab(tab) {
+            document.querySelectorAll('.post-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('studyClassSelector').style.display = tab === 'study' ? 'block' : 'none';
+        }
+
+        // ==================== POSTS ====================
+        async function createPost() {
+            if (!currentUser) { showLogin(); return; }
+            const content = document.getElementById('postContent').value.trim();
+            if (!content && mediaFiles.length === 0) { showAlert('Add content or media', 'error'); return; }
+            const isStudy = document.querySelector('.post-tab.active').innerText.includes('Study');
+            let studyClass = '';
+            if (isStudy) {
+                studyClass = document.getElementById('studyClass').value;
+                if (!studyClass) { showAlert('Select class', 'error'); return; }
+            }
+            const post = { id:'post_'+Date.now(), userId:currentUser.id, author:currentUser.name, grade:currentUser.grade, avatar:currentUser.avatar, content, media:JSON.stringify(mediaFiles), timestamp:new Date().toISOString(), likes:0, likedBy:[], comments:[], type:isStudy?'study':'general', studyClass, authorAdminTitle:currentUser.adminTitle };
+            posts.unshift(post);
+            const saved = await saveData();
+            if (saved) {
+                document.getElementById('postContent').value = '';
+                mediaFiles = [];
+                updateMediaPreview();
+                document.getElementById('studyClass').value = '';
+                if (currentClassFilter) filterByClass(currentClassFilter); else renderFeed();
+                updateProfileDisplay();
+                showAlert('Posted!');
+            } else {
+                document.getElementById('postContent').value = '';
+                mediaFiles = [];
+                updateMediaPreview();
+                document.getElementById('studyClass').value = '';
+                if (currentClassFilter) filterByClass(currentClassFilter); else renderFeed();
+                updateProfileDisplay();
+                showAlert('Posted (offline)', 'success');
+            }
+        }
+        async function deletePost(pid) {
+            if (!currentUser) return;
+            const post = posts.find(p => p.id === pid);
+            if (!post || (post.userId !== currentUser.id && !isAdmin(currentUser))) { showAlert('Not authorized', 'error'); return; }
+            if (confirm('Delete?')) {
+                posts = posts.filter(p => p.id !== pid);
+                await saveData();
+                if (currentClassFilter) filterByClass(currentClassFilter); else renderFeed();
+                updateProfileDisplay();
+                showAlert('Deleted');
+            }
+        }
+        async function likePost(pid) {
+            if (!currentUser) return;
+            const post = posts.find(p => p.id === pid);
+            if (!post) return;
+            if (!post.likedBy) post.likedBy = [];
+            if (post.likedBy.includes(currentUser.id)) { post.likes--; post.likedBy = post.likedBy.filter(id => id !== currentUser.id); }
+            else { post.likes++; post.likedBy.push(currentUser.id); }
+            await saveData();
+            if (currentClassFilter) filterByClass(currentClassFilter); else renderFeed();
+        }
+        function toggleCommentBox(pid) {
+            activePostForComment = activePostForComment === pid ? null : pid;
+            if (currentClassFilter) filterByClass(currentClassFilter); else renderFeed();
+        }
+        async function addComment(pid) {
+            if (!currentUser) return;
+            const input = document.getElementById(`comment-input-${pid}`);
+            if (!input) return;
+            const text = input.value.trim();
+            if (!text) return;
+            const post = posts.find(p => p.id === pid);
+            if (!post) return;
+            if (!post.comments) post.comments = [];
+            post.comments.push({ id:'c_'+Date.now(), userId:currentUser.id, author:currentUser.name, text, timestamp:new Date().toISOString() });
+            await saveData();
+            activePostForComment = null;
+            if (currentClassFilter) filterByClass(currentClassFilter); else renderFeed();
+        }
+
+        // ==================== STUDY HUB ====================
+        function showStudyHub() {
+            document.getElementById('postsFeed').style.display = 'none';
+            document.getElementById('studyHubView').style.display = 'block';
+            document.getElementById('classFilterBar').style.display = 'none';
+            currentClassFilter = null;
+            let html = '<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:0.5rem; padding:1rem;">';
+            STUDY_CLASSES.forEach(c => { const cnt = posts.filter(p => p.studyClass === c).length; html += `<div class="class-card" onclick="filterByClass('${c}')"><h4>${c}</h4><p>${cnt} posts</p></div>`; });
+            html += '</div>';
+            document.getElementById('classesGrid').innerHTML = html;
+        }
+        function filterByClass(c) {
+            currentClassFilter = c;
+            document.getElementById('postsFeed').style.display = 'block';
+            document.getElementById('studyHubView').style.display = 'none';
+            document.getElementById('classFilterBar').style.display = 'block';
+            document.getElementById('currentClass').innerText = c;
+            document.getElementById('classPostCount').innerText = `${posts.filter(p => p.studyClass === c).length} posts`;
+            renderFeed();
+        }
+        function showAllPosts() { currentClassFilter = null; document.getElementById('classFilterBar').style.display = 'none'; renderFeed(); }
+
+        // ==================== RENDER FEED ====================
+        function renderFeed() {
+            const feed = document.getElementById('postsFeed');
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            let filtered = [...posts];
+            if (currentClassFilter) filtered = filtered.filter(p => p.studyClass === currentClassFilter);
+            if (search) filtered = filtered.filter(p => (p.content && p.content.toLowerCase().includes(search)) || (p.author && p.author.toLowerCase().includes(search)) || (p.studyClass && p.studyClass.toLowerCase().includes(search)));
+            if (currentFeed === 'latest') filtered.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+            else if (currentFeed === 'popular') filtered.sort((a,b) => (b.likes||0) - (a.likes||0));
+            else if (currentFeed === 'mygrade' && currentUser) filtered = filtered.filter(p => p.grade === currentUser.grade);
+            if (!filtered.length) { feed.innerHTML = '<div style="background:white; padding:2rem; text-align:center;">No posts</div>'; return; }
+            let html = '';
+            filtered.forEach(p => {
+                const isOwner = currentUser && (currentUser.id === p.userId || isAdmin(currentUser));
+                const liked = currentUser && p.likedBy && p.likedBy.includes(currentUser.id);
+                const time = new Date(p.timestamp).toLocaleString();
+                let mediaHtml = '';
+                if (p.media && p.media !== '[]') {
+                    try {
+                        const media = JSON.parse(p.media);
+                        if (media.length) {
+                            mediaHtml = '<div style="margin:1rem 0;">';
+                            media.forEach(m => {
+                                if (m.type === 'image') mediaHtml += `<img src="${m.url}" style="width:100%; border-radius:12px;">`;
+                                else if (m.type === 'video') mediaHtml += `<video src="${m.url}" controls style="width:100%; border-radius:12px;"></video>`;
+                                else if (m.type === 'audio') mediaHtml += `<audio src="${m.url}" controls style="width:100%;"></audio>`;
+                            });
+                            mediaHtml += '</div>';
+                        }
+                    } catch(e) {}
+                }
+                let commentsHtml = '';
+                if (p.comments && p.comments.length) {
+                    commentsHtml = '<div style="margin:0.5rem 0;">';
+                    p.comments.slice(-3).forEach(c => commentsHtml += `<div style="padding:0.3rem; background:#f8fafc; margin:0.2rem 0; border-radius:8px;"><strong>${c.author}:</strong> ${c.text}</div>`);
+                    commentsHtml += '</div>';
+                }
+                const classBadge = p.studyClass ? `<span style="background:#0b1e33; color:#f5b342; padding:0.2rem 0.5rem; border-radius:12px; font-size:0.7rem; margin-left:0.5rem;">${p.studyClass}</span>` : '';
+                const adminBadge = p.authorAdminTitle ? `<span class="${getAdminBadgeClass(p.authorAdminTitle)}" style="margin-left:0.3rem;">${getAdminTitleDisplay(p.authorAdminTitle)}</span>` : '';
+                html += `<div class="post-card"><div class="post-author" onclick="viewProfile('${p.userId}')"><div class="author-avatar">${p.avatar || '👤'}</div><div class="author-info"><h4>${p.author} ${adminBadge} ${classBadge}</h4><div class="timestamp">${time}</div></div></div><div class="post-content">${p.content}</div>${mediaHtml}${commentsHtml}<div class="post-actions"><button class="action-btn" onclick="likePost('${p.id}')"><span>${liked ? '❤️' : '🤍'}</span> ${p.likes || 0}</button><button class="action-btn" onclick="toggleCommentBox('${p.id}')">💬 ${p.comments ? p.comments.length : 0}</button>${isOwner ? `<button class="action-btn delete-btn" onclick="deletePost('${p.id}')">🗑️</button>` : ''}</div>${activePostForComment === p.id ? `<div style="margin-top:1rem;"><input type="text" id="comment-input-${p.id}" placeholder="Write comment..." style="width:70%; padding:0.5rem;"><button onclick="addComment('${p.id}')" style="padding:0.5rem 1rem;">Post</button></div>` : ''}</div>`;
+            });
+            feed.innerHTML = html;
+        }
+        function switchFeed(f) {
+            currentFeed = f;
+            document.querySelectorAll('.feed-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            if (f === 'study') showStudyHub();
+            else { document.getElementById('postsFeed').style.display = 'block'; document.getElementById('studyHubView').style.display = 'none'; document.getElementById('classFilterBar').style.display = 'none'; currentClassFilter = null; renderFeed(); }
+        }
+
+        // ==================== START ====================
+        window.onload = async function() {
+            await loadData();
+            hideLoading();
+            await checkSavedUser();
+            setInterval(async () => { if (currentUser) { await loadData(); updateProfileDisplay(); renderFeed(); renderChatList(); } }, 15000);
+        };
+    </script>
+</body>
+</html>
